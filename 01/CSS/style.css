@@ -1,0 +1,28 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body{
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+header{
+    top: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 50px;
+    width: 100vw;
+    position: absolute;
+}
+
+button{
+    width: 100px;
+    height: 25px;
+    text-align: center;
+    border-radius: 10;
+}
