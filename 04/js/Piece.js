@@ -1,5 +1,5 @@
 class Piece {
-  constructor(x, y, r, color,main, context) {
+  constructor(x, y, r, color, main, context) {
     this.context = context;
     this.x = x;
     this.y = y;
@@ -10,7 +10,7 @@ class Piece {
     this.unlockCheck = false;
 
     this.randomAxe = 20;
-    this.rot;
+    this.rot = 0;
 
     //Animation
     this.timing = 0;

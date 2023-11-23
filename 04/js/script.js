@@ -35,10 +35,6 @@ function setup() {
   piece1 = new Piece(0, 0,150,"#ff6390", true,context);
   document.addEventListener("click", mousePressed);
 
-  piece3.rot = piece3.getRandomInt(0) * 10;
-  piece2.rot = piece2.getRandomInt(0) * 10;
-  piece1.rot = piece1.getRandomInt(0) * 10;
-
   draw();
 }
 
