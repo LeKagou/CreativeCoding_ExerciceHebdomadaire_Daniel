@@ -9,17 +9,20 @@ class Piece {
     this.main = main;
     this.unlockCheck = false;
 
-    this.randomAxe = 20;
+    this.randomAxe = this.getRandomInt(18) * 10;
     this.rot = 0;
 
     //Animation
     this.timing = 0;
     this.timing2 = 1;
-    this.savedRot = this.rot;
+    this.savedRot = 0;
 
     this.red = 255;
     this.green = 99;
     this.blue = 144;
+
+    this.tourner = false;
+    this.AjoutRotation = 10;
 
   }
 
@@ -46,60 +49,52 @@ class Piece {
 
   addRotation(){
     this.timing = 0;
-    this.savedRot += 20;
-    console.log(this.rot);
+    this.savedRot+=this.AjoutRotation;
+    this.tourner = true;
   }
 
   animateRotation(){
-    if(this.rot >= this.savedRot)
+    if(this.rot >= this.savedRot || this.tourner == false)
     {
+      if(this.savedRot >= 360)
+      {
+        this.savedRot = 0;
+        this.rot = 0;
+      }
       return;
     }
     const easing = Easing.circInOut(this.timing);
     this.timing += 0.01;
 
-    this.rot = this.rot + 20 * easing;
+    this.rot = this.rot + this.AjoutRotation * easing;
+    if(easing >= 1)
+    {
+      this.tourner = false;
+    }
   }
 
   getRandomInt(max) {
     this.rot = 0;
     let r = Math.floor(Math.random() * max);
-    if(r >= 180)
-    {
-      r -= 180;
-    }
     this.savedRot = r;
     return r
   }
 
   changeColor(){
 
-    if(this.rot + 20 >= this.randomAxe -1 && this.rot + 20 <= this.randomAxe + 1)
+    if(this.rot + this.AjoutRotation >= this.randomAxe -1 && this.rot + this.AjoutRotation <= this.randomAxe + 1)
     {
       this.unlockCheck = true;
       this.timing2 = 0;
-      console.log(this.unlockCheck);
-      console.log("Passe");
     }
     else
     {
       if(this.unlockCheck == true)
       {
         this.timing2 = 0;
-        console.log("Zero");
       }
       this.unlockCheck = false;
-      console.log("PassePAS");
     }
-
-    /*if(this.unlockCheck == true)
-    {
-      this.color = "#62e379";
-    }
-    else
-    {
-      this.color = "#ff6390";
-    }*/
   }
 
   changeColorAnimated(){
@@ -110,11 +105,9 @@ class Piece {
     let diffGreen = 227 - this.green;
     let diffBlue = this.blue - 121;
 
-    //console.log(this.unlockCheck);
     
     if(this.timing2 >= 1)
     {
-      //console.log("return");
       return;
     }
     this.timing2 += 0.07;
@@ -129,9 +122,9 @@ class Piece {
   }
 
   isInMe(mouseX, mouseY) {
-    // on calcule la distance entre la souris et le centre
+
     let d = this.dist(mouseX, mouseY, this.x + window.innerWidth / 2, this.y + window.innerHeight / 2);
-    // on compare cette distance au rayon
+
     if(!this.main){
       if (d < this.r && d >= this.r - 100) {
         return true;
@@ -148,8 +141,7 @@ class Piece {
   }
 
   dist(x1, y1, x2, y2) {
-    // calcule la distance entre deux points
-    // pythagore power
+
     let d = Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
     return d;
   }
