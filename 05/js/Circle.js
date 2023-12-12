@@ -31,7 +31,7 @@ class Circle {
 
   changeColor(r, g, b) {
 
-    if(r >= 255 && g >= 255 && b >= 255){
+    if(r >= 252 && g >= 252 && b >= 252){
       if(this.isStatic == false){
         this.isStatic = true;
         console.log(this.isStatic);
