@@ -30,7 +30,7 @@ class App {
           y: window.innerHeight / 2,}
       );
     }
-    console.log()
+
     for (let i = 0; i < 1024; i++) {
     }
 
@@ -44,7 +44,7 @@ class App {
   }
 
   draw() {
-    this.ctx.fillStyle = "white";
+    this.ctx.fillStyle = "black";
     this.ctx.fillRect(0, 0, this.width, this.height);
     this.allCircles.forEach((circle) => {
       circle.draw();
@@ -63,7 +63,6 @@ class App {
     // const data = this.audioTool.dataWave;
     // const data = this.audioTool.dataFrequency;
     //var frequence = this.audioTool.biquadFilter.frequency.value
-    console.log(this.audioTool.frequence);
     const data = this.audioTool.dataFloatFrequency;
     if (this.audioTool.audioContext && this.audioTool.isPlaying) {
       for (let i = 0; i < data.length - 20; i+=1) {
@@ -80,15 +79,14 @@ class App {
         //this.allCircles[i].y = -data[i] + window.innerHeight / 2;
         // console.log(Math.abs(data[i] / 10));
         // this.allCircles[i].fontSize = -data[i] / 5;
-        if(i > this.audioTool.frequence)
+        if(i >= (this.audioTool.frequence - this.audioTool.margeFrequence) / 1 && i <= (this.audioTool.frequence + this.audioTool.margeFrequence) / 1)
         {
-          this.ctx.strokeStyle = `rgb(255,0,0,0.1)`;
+          this.ctx.strokeStyle = `rgb(0,0,255,0.5)`;
         }else{
-          this.ctx.strokeStyle = `rgba(0,0,0,0.5)`;
+          this.ctx.strokeStyle = `rgba(150,150,150,0.5)`;
         }
       }
     }
-
     requestAnimationFrame(this.draw.bind(this));
   }
 }
