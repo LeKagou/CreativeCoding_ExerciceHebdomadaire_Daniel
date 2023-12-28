@@ -12,6 +12,8 @@ export default class Raster{
 
         this.definitionGrille = 6;
         this.createGrid(0);
+
+        this.FilterID = 0;
     }
 
     createGrid(chance){
@@ -61,8 +63,19 @@ export default class Raster{
       
           // on calcule l'intensité de la couleur
           let intensity = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-          Pixel.color = `rgb(${r},${g},${b})`;
           // on change le rayon du cercle en fonction de l'intensité (pourcentage de 0 à 1)
+          if(this.FilterID == 0)
+          {
+            Pixel.color = `rgb(${r},${g},${b})`;
+          }
+          if(this.FilterID == 1)
+          {
+            Pixel.changeRadius(intensity / 255);
+          }
+          if(this.FilterID >= 2)
+          {
+            Pixel.changeColor(r, g, b);
+          }
           //Pixel.changeRadius(intensity / 255);
         });
       }

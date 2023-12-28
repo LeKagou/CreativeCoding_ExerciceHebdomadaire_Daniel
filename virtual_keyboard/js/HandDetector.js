@@ -30,7 +30,9 @@ export default class HandDetector extends EventEmitter {
 
     this.gesture = false;
     this.gestureAnulaires = false;
+    this.gestureHand = true;
 
+    this.filtre = 1;
     this.chance = 0;
 
   }
@@ -60,24 +62,32 @@ export default class HandDetector extends EventEmitter {
       this.videoElement,
       startTimeMs
     );
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    //this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     if (results.landmarks.length > 0) {
       //   console.log(results.landmarks);
-      results.landmarks.forEach((pointsDeLaMain) => {
-        drawLandmarks(this.ctx, pointsDeLaMain, { color: "grey", radius: 10 });
-      });
+      if(this.gesture == false && this.gestureAnulaires == false)
+      {
+        results.landmarks.forEach((pointsDeLaMain) => {
+          drawLandmarks(this.ctx, pointsDeLaMain, { color: "grey", radius: 10 });
+        });
+      }
 
       // je peux stocker les coordonnées du bout du doigt
 
       this.finger = results.landmarks[0][4];
       this.finger2 = results.landmarks[0][8];
-      drawLandmarks(this.ctx, [this.finger], { color: "red", radius: 10 });
-      drawLandmarks(this.ctx, [this.finger2], { color: "red", radius: 10 });
+      if(this.gesture == false && this.gestureAnulaires == false)
+      {
+        drawLandmarks(this.ctx, [this.finger], { color: "red", radius: 10 });
+        drawLandmarks(this.ctx, [this.finger2], { color: "red", radius: 10 });
+      }
       if(results.landmarks.length > 1)
       {
         this.finger3 = results.landmarks[1][8];
-        drawLandmarks(this.ctx, [this.finger3], { color: "red", radius: 10 });
-
+        if(this.gesture == false && this.gestureAnulaires == false)
+        {
+          drawLandmarks(this.ctx, [this.finger3], { color: "red", radius: 10 });
+        }
         this.detectionGestureAnnulaire();
 
       }
@@ -108,9 +118,27 @@ export default class HandDetector extends EventEmitter {
         drawLandmarks(this.ctx, [this.finger3], { color: "green", radius: 10 });
       }
 
+      this.gestureHand = false;
+
     } else {
       this.finger = { x: null, y: null };
+      if(this.gestureHand == false)
+      {
+        this.filtre++;
+        if(this.filtre > 4)
+        {
+          this.filtre = 0;
+          this.chance = 50;
+          this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+          this.resetGrid();
+        }
+        this.Raster.FilterID = this.filtre;
+        console.log(this.filtre)
+        this.gestureHand = true;
+      }
     }
+
+    console.log(this.gestureHand)
 
   }
 
@@ -193,7 +221,7 @@ export default class HandDetector extends EventEmitter {
   securiteMauvaiseDetectionGesture(){
     if(this.gestureAnulaires != true)
     {
-      if(this.distance(this.finger.x, this.finger.y,this.finger2.x, this.finger2.y) <= 0.075)
+      if(this.distance(this.finger.x, this.finger.y,this.finger2.x, this.finger2.y) <= 0.05)
       {
         //Proche
         this.gesture = true;
@@ -204,7 +232,7 @@ export default class HandDetector extends EventEmitter {
           this.stopTimer();
         }
       }
-      else if(this.distance(this.finger.x, this.finger.y,this.finger2.x, this.finger2.y) < 0.15)
+      else if(this.distance(this.finger.x, this.finger.y,this.finger2.x, this.finger2.y) < 0.1)
       {
         //Loin
         if(this.timerActiv != true && this.gesture == true)

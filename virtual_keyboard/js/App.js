@@ -12,7 +12,6 @@ export default class App {
     this.canvas = document.createElement("canvas");
     this.canvas.width = window.innerWidth;
     this.canvas.height = window.innerHeight;
-    document.body.appendChild(this.canvas);
     this.ctx = this.canvas.getContext("2d");
 
     this.Raster = new Raster(this.canvas,this.ctx,this.cam);
@@ -22,6 +21,7 @@ export default class App {
       "ready",
       this.onHandDetectorReady.bind(this)
     );
+    document.body.appendChild(this.canvas);
   }
 
   onHandDetectorReady(e) {
@@ -30,8 +30,9 @@ export default class App {
   }
 
   draw() {
-    this.handDetector.detect();
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.Raster.draw();
+    this.handDetector.detect();
     //this.grid.draw(this.handDetector.finger);
     requestAnimationFrame(this.draw.bind(this));
   }
