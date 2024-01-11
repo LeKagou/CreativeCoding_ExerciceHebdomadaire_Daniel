@@ -17,6 +17,7 @@ export default class App {
     this.Raster = new Raster(this.canvas,this.ctx,this.cam);
 
     this.handDetector = new HandDetector(this.cam.video,this.canvas,this.ctx,this.Raster);
+    
     this.handDetector.addEventListener(
       "ready",
       this.onHandDetectorReady.bind(this)

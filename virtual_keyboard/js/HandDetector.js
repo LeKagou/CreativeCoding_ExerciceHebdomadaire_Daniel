@@ -32,8 +32,11 @@ export default class HandDetector extends EventEmitter {
     this.gestureAnulaires = false;
     this.gestureHand = true;
 
-    this.filtre = 1;
+    this.filtre = 0;
     this.chance = 0;
+
+    this.mains;
+    this.drawing = false;
 
   }
 
@@ -47,9 +50,9 @@ export default class HandDetector extends EventEmitter {
       },
       runningMode: "VIDEO", // this.runningMode,
       numHands: 2,
-      minHandDetectionConfidence: 0.5,
-      minHandPresenceConfidence: 0.5,
-      minTrackingConfidence: 0.5,
+      minHandDetectionConfidence: 0.8,
+      minHandPresenceConfidence: 0.8,
+      minTrackingConfidence: 0.8,
     });
 
     // this.detect();
@@ -78,12 +81,14 @@ export default class HandDetector extends EventEmitter {
       this.finger2 = results.landmarks[0][8];
       if(this.gesture == false && this.gestureAnulaires == false)
       {
+        this.mains = 1;
         drawLandmarks(this.ctx, [this.finger], { color: "red", radius: 10 });
         drawLandmarks(this.ctx, [this.finger2], { color: "red", radius: 10 });
       }
       if(results.landmarks.length > 1)
       {
         this.finger3 = results.landmarks[1][8];
+        this.mains = 2;
         if(this.gesture == false && this.gestureAnulaires == false)
         {
           drawLandmarks(this.ctx, [this.finger3], { color: "red", radius: 10 });
@@ -98,13 +103,18 @@ export default class HandDetector extends EventEmitter {
         this.finger3 = null;
       }
 
+      if(this.drawing == true)
+      {
+        this.startDrawing();
+      }
+
       //console.log(this.finger.x + " " + this.finger.y);
       //console.log(this.finger2.x + " " + this.finger2.y);
 
 
       this.securiteMauvaiseDetectionGesture();
       
-      if(this.gesture == true && this.gestureAnulaires == false)
+      if(this.gesture == true && this.gestureAnulaires == false || this.drawing == true && this.gestureAnulaires == false)
       {
         drawLandmarks(this.ctx, [this.finger], { color: "green", radius: 10 });
         drawLandmarks(this.ctx, [this.finger2], { color: "green", radius: 10 });
@@ -118,11 +128,13 @@ export default class HandDetector extends EventEmitter {
         drawLandmarks(this.ctx, [this.finger3], { color: "green", radius: 10 });
       }
 
+      console.log(this.mains)
+
       this.gestureHand = false;
 
     } else {
       this.finger = { x: null, y: null };
-      if(this.gestureHand == false)
+      /*if(this.gestureHand == false)
       {
         this.filtre++;
         if(this.filtre > 4)
@@ -135,11 +147,8 @@ export default class HandDetector extends EventEmitter {
         this.Raster.FilterID = this.filtre;
         console.log(this.filtre)
         this.gestureHand = true;
-      }
+      }*/
     }
-
-    console.log(this.gestureHand)
-
   }
 
   resetGrid(){
@@ -218,15 +227,28 @@ export default class HandDetector extends EventEmitter {
     }
   }
 
+  startDrawing(){
+    console.log("StartDrawing")
+    this.Raster.checkPixelsPos(this.finger.x,this.finger.y);
+  }
+
   securiteMauvaiseDetectionGesture(){
     if(this.gestureAnulaires != true)
     {
       if(this.distance(this.finger.x, this.finger.y,this.finger2.x, this.finger2.y) <= 0.05)
       {
         //Proche
-        this.gesture = true;
-        this.chance = ((this.finger.y - 1) * -1) * 100;
-        this.resetGrid();
+        if(this.mains == 2)
+        {
+          this.gesture = true;
+          this.chance = ((this.finger.y - 1) * -1) * 100;
+          this.resetGrid();
+        }
+        else if(this.mains == 1)
+        {
+          this.drawing = true;
+        }
+
         if(this.timerActiv)
         {
           this.stopTimer();
@@ -235,13 +257,14 @@ export default class HandDetector extends EventEmitter {
       else if(this.distance(this.finger.x, this.finger.y,this.finger2.x, this.finger2.y) < 0.1)
       {
         //Loin
-        if(this.timerActiv != true && this.gesture == true)
+        if(this.timerActiv != true && this.gesture == true || this.timerActiv != true && this.drawing == true  )
         {
           this.startTimer(500);
         }
       }
       else if(this.distance(this.finger.x, this.finger.y,this.finger2.x, this.finger2.y) > 0.2){
         this.gesture = false;
+        this.drawing = false;
       }
     }
   }
@@ -284,6 +307,7 @@ export default class HandDetector extends EventEmitter {
     this.gesture = false;
     this.gestureAnulaires = false;
     this.waiting = false;
+    this.drawing = false;
   }
 
   distance(x1, y1, x2, y2) 

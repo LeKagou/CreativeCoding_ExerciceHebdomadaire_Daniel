@@ -16,6 +16,13 @@ export default class Raster{
         this.FilterID = 0;
     }
 
+    checkPixelsPos(fx,fy){
+      this.grille.forEach((Pixel) => {
+        Pixel.checkAndFix(fx,fy);
+        // le mouvment de chaque cercle est géré dans la fonction draw de la class Circle
+    });
+    }
+
     createGrid(chance){
         console.log("CreateGrid");
         //this.video.
@@ -57,25 +64,28 @@ export default class Raster{
           //récupérer la couleur du pixel par l'index
           let index = (Pixel.origin.y * window.innerWidth + Pixel.origin.x) * 4;
           // on récupère les valeurs de rouge, vert et bleu
-          let r = pixels.data[index];
-          let g = pixels.data[index + 1];
-          let b = pixels.data[index + 2];
+
+          let r = 0;
+          let g = 0;
+          let b = 0;
+
+          if(Pixel.Fix == false)
+          {
+            r = pixels.data[index];
+            g = pixels.data[index + 1];
+            b = pixels.data[index + 2];
+          }
+          else
+          {
+            r = 255;
+            g = 255;
+            b = 255;
+          }
       
           // on calcule l'intensité de la couleur
           let intensity = 0.2126 * r + 0.7152 * g + 0.0722 * b;
           // on change le rayon du cercle en fonction de l'intensité (pourcentage de 0 à 1)
-          if(this.FilterID == 0)
-          {
-            Pixel.color = `rgb(${r},${g},${b})`;
-          }
-          if(this.FilterID == 1)
-          {
-            Pixel.changeRadius(intensity / 255);
-          }
-          if(this.FilterID >= 2)
-          {
-            Pixel.changeColor(r, g, b);
-          }
+          Pixel.color = `rgb(${r},${g},${b})`;
           //Pixel.changeRadius(intensity / 255);
         });
       }

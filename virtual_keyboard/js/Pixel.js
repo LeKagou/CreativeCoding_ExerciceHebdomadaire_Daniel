@@ -13,6 +13,8 @@ export default class Pixel {
 
     this.chance = chance;
     this.shape = this.randomIntFromInterval();
+
+    this.Fix = false;
   }
 
   draw(context) {
@@ -29,7 +31,14 @@ export default class Pixel {
     //on dessine le cercle
     //context.fillStyle = this.color;
     context.beginPath();
-    context.fillStyle = this.color;
+    if(this.Fix){
+      context.fillStyle = "white";
+      console.log("white");
+    }
+    else
+    {
+      context.fillStyle = this.color;
+    }
     if (this.shape == 0) {
       context.arc(0, 0, this.rayon, 0, 2 * Math.PI, true);
     } else {
@@ -40,44 +49,28 @@ export default class Pixel {
     context.restore();
   }
 
+  checkAndFix(fx,fy){
+      let distance = this.distance(fx * window.innerWidth,fy * window.innerHeight,this.x,this.y);
+      if(distance < 20)
+      {
+        this.Fix = true;
+        this.color = `rgb(${255},${255},${255})`;
+      }
+  }
+
+  distance(x1, y1, x2, y2) 
+  {
+    return Math.sqrt((x2 - x1)*(x2 - x1) + (y2 - y1)*(y2 - y1));
+  }
+
   changeColor(r, g, b) {
 
-      if (r > 35) {
-        r = r - r / 2;
-        g = g - r / 2;
-        b = b - r / 2;
-        this.rayon = 5;
-      } else {
-        r = 0;
-        g = 0;
-        b = 0;
-        this.rayon = 1;
-      }
-
-      if (g > 35) {
-        r = r - g / 2;
-        g = g - g / 2;
-        b = b - g / 2;
-        this.rayon = 1;
-      } else {
-        r = 0;
-        g = 0;
-        b = 0;
-        this.rayon = 20;
-      }
-
-      if (b > 35) {
-        r = r - b / 4;
-        g = g - b / 4;
-        b = b - b / 4;
-        this.rayon = 10;
-      } else {
-        r = 0;
-        g = 0;
-        b = 0;
-        this.rayon = 1;
-      }
+    if(!this.Fix){
       this.color = `rgb(${r},${g},${b})`;
+    }
+    else{
+      this.color = "white";
+    }
   }
 
   randomIntFromInterval() {
